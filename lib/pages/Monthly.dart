@@ -20,7 +20,6 @@ class Monthly extends StatefulWidget {
 
 class _MonthlyState extends State<Monthly>
     with SingleTickerProviderStateMixin {
-  String _currentAddress;
   AnimationController _controller;
 
   @override

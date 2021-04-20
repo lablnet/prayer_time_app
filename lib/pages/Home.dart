@@ -6,7 +6,6 @@ import 'package:hijri/hijri_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils.dart';
-import './Monthly.dart';
 
 
 class Home extends StatefulWidget {
@@ -30,7 +29,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home>
     with SingleTickerProviderStateMixin {
-      String _currentAddress;
   AnimationController _controller;
 
   @override
@@ -66,9 +64,6 @@ class _HomeState extends State<Home>
             Center(
               child: Column(
                 children: [
-                  Text(_currentAddress ?? "" , style: TextStyle(
-                      fontSize: 17
-                  )),
                   Text("Today", style: TextStyle(
                       fontSize: 16
                   ),
