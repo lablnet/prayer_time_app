@@ -56,6 +56,7 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Prayers Time",
       home: Home(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
       theme: lightTheme(),
       darkTheme: darkTheme(),
