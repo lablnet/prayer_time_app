@@ -44,22 +44,23 @@ class _MonthlyState extends State<Monthly>
   Widget buildCard(BuildContext context) {
     DateTime now = DateTime.now();
     HijriCalendar nowHijri = HijriCalendar.now();
-    final DateFormat formatter = DateFormat('MMMM dd yyyy');
-    final String formatted = formatter.format(now);
-    print(now.timeZoneOffset);
-    parseTimeZoneOffset(now.timeZoneOffset);
     PrayTime prayerTime = PrayTime(method: widget.method);
     List<TableRow> tbl = [];
-    for (int i = now.day; i <= 30; i++) {
+    for (int i = 1; i <= 30; i++) {
+      var date = now.add(Duration(days: i));
+      DateFormat formatter = DateFormat('MMMM dd yyyy');
+      String formatted = formatter.format(now);
+
       var times = prayerTime.getPrayerTimes({
-        "year": now.year,
-        "mon": now.month,
-        "mday": i,
+        "year": date.year,
+        "mon": date.month,
+        "mday": date.day,
       }, widget.latitude, widget.longitude, parseTimeZoneOffset(now.timeZoneOffset));
 
       tbl.add(
           TableRow(
             children: [
+              Text(formatted),
               Text(times[0]),
               Text(times[1]),
               Text(times[2]),
@@ -77,33 +78,39 @@ class _MonthlyState extends State<Monthly>
         [
 
           Divider(),
-          Table(
-              border: TableBorder.all(),
-              children: [
-                TableRow( children: [
-                  Column(children:[
-                    Text('Fajr')
-                  ]),
-                  Column(children:[
-                    Text('Sunrise')
-                  ]),
-                  Column(children:[
-                    Text('Dhuhr')
-                  ]),
-                  Column(children:[
-                    Text('Asr')
-                  ]),
-                  Column(children:[
-                    Text('Maghrib')
-                  ]),
-                  Column(children:[
-                    Text('Isha')
+          Flexible(
+            child: Table(
+
+                border: TableBorder.all(),
+                children: [
+                  TableRow( children: [
+                    Column(children:[
+                      Text('Date')
+                    ]),
+                    Column(children:[
+                      Text('Fajr')
+                    ]),
+                    Column(children:[
+                      Text('Sunrise')
+                    ]),
+                    Column(children:[
+                      Text('Dhuhr')
+                    ]),
+                    Column(children:[
+                      Text('Asr')
+                    ]),
+                    Column(children:[
+                      Text('Maghrib')
+                    ]),
+                    Column(children:[
+                      Text('Isha')
+                    ]),
+
                   ]),
 
+                  ...tbl,
                 ]),
-
-                ...tbl,
-              ]),
+          ),
 
         ],
       ),

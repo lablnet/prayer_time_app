@@ -9,6 +9,16 @@ import './Monthly.dart';
 
 
 class Home extends StatefulWidget {
+  Map methods = {
+    0: 'Jafari',
+    1: 'University of Islamic Sciences, Karachi',
+    2: 'Islamic Society of North America (ISNA)',
+    3: 'Muslim World League (MWL)',
+    4: 'Umm al-Qura, Makkah',
+    5: 'Egyptian General Authority of Survey',
+    6: "Custom",
+    7: 'Institute of Geophysics, University of Tehran'
+  };
   double latitude;
   double longitude;
   int method;
@@ -56,15 +66,25 @@ class _HomeState extends State<Home>
       }, widget.latitude, widget.longitude, parseTimeZoneOffset(now.timeZoneOffset));
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
+        child: ListView(
           children: <Widget>
           [
-            Text(_currentAddress ?? "" , style: TextStyle(
-                fontSize: 17
-            )),
-            Text("Today", style: TextStyle(
-                fontSize: 13
-            ),
+            Center(
+              child: Column(
+                children: [
+                  Text(_currentAddress ?? "" , style: TextStyle(
+                      fontSize: 17
+                  )),
+                  Text("Today", style: TextStyle(
+                      fontSize: 16
+                  ),
+                  ),
+                  Text(widget.methods[widget.method], style: TextStyle(
+                      fontSize: 13
+                  ),
+                  ),
+                ],
+              ),
             ),
             Divider(),
             ListTile(
@@ -162,9 +182,7 @@ class _HomeState extends State<Home>
             TextButton(
               child: Text("Extend View"),
                onPressed: () => {
-                 Navigator.push(
-                     context, MaterialPageRoute(builder: (context) => Monthly(latitude: widget.latitude, longitude: widget.longitude, method: widget.method)
-                 ))
+                 Navigator.pushNamed(context, 'extend')
             },
             )
           ],

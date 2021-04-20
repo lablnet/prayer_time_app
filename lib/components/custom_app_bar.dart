@@ -30,12 +30,10 @@ AppBar customAppBar(BuildContext context, String title, {bool back = true}) {
         onSelected: (value) {
           switch (value) {
             case 'Settings':
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Settings()));
+              Navigator.pushNamed(context, 'settings');
               break;
           case 'About':
-            Navigator.push(
-            context, MaterialPageRoute(builder: (context) => About()));
+            Navigator.pushNamed(context, 'about');
             break;
           default:
               openUrl("https://github.com/lablnet/prayer_time_app");

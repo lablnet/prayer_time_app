@@ -1,7 +1,10 @@
 import "package:flutter/material.dart";
 import "package:flutter/scheduler.dart";
+import 'package:prayer_time_app/pages/Monthly.dart';
 import 'package:prayer_time_app/config.dart';
+import 'package:prayer_time_app/pages/About.dart';
 import 'package:prayer_time_app/pages/Home.dart';
+import 'package:prayer_time_app/pages/Settings.dart';
 import 'package:prayer_time_app/theme.dart';
 import 'package:prayer_time_app/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,6 +61,12 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
       theme: lightTheme(),
       darkTheme: darkTheme(),
       themeMode: currentTheme.currentTheme(theme: widget.theme),
+      routes: {
+        'home': (context) => Home(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
+        'extend': (context) => Monthly(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
+        'settings': (context) => Settings(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
+        'about': (context) => About(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }

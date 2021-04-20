@@ -1,13 +1,13 @@
 import "package:flutter/material.dart";
 import 'package:prayer_time_app/components/custom_app_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'Home.dart';
 
 class Settings extends StatefulWidget {
-  double latitude = null;
-  double longitude = null;
-  int method = 1;
+  double latitude;
+  double longitude;
+  int method;
+  Settings({this.latitude, this.longitude, this.method});
 
 
   @override
@@ -22,15 +22,12 @@ class _SettingsState extends State<Settings> {
     var latitude = prefs.getDouble("latitude") ?? null;
     var longitude = prefs.getDouble("longitude") ?? null;
 
-    //prefs.setInt("method", item);
-    print("settings");
-    print(latitude);
-    print(longitude);
-    print(item);
-    /*Navigator.push(
+    prefs.setInt("method", item);
+    Navigator.push(
         context, MaterialPageRoute(builder: (context) => Home(latitude:latitude, longitude: longitude, method: item,)));
 
-    */
+    //Navigator.pushNamed(context, 'home');
+
   }
   @override
   Widget build(BuildContext context) {
@@ -45,17 +42,17 @@ class _SettingsState extends State<Settings> {
     ];
     List<Widget> items = [];
     int i = 0;
-    for (var item in methods) {
+    for (int i = 0; i < methods.length; i++) {
       items.add(
         ListTile(
             title: Text(
-              item + i.toString(),
+              methods[i],
               style: TextStyle(
                 fontSize: 18,
               ),
             ),
           onTap: () async => {
-              NavigationsRoute(context, item)
+              NavigationsRoute(context, i)
           },
           tileColor: (i == widget.method)
               ? Colors.green[200]
@@ -63,7 +60,6 @@ class _SettingsState extends State<Settings> {
 
         ),
       );
-      i++;
     }
     return Scaffold(
       appBar: customAppBar(context, "Settings"),
