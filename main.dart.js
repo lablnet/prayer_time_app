@@ -8988,14 +8988,15 @@ this.b=b},
 Hd:function Hd(){},
 alx:function(){return new T.rp(new S.Sh(),P.x(t.K,t.od))},
 vi:function vi(a){this.b=a},
-t1:function t1(a,b,c,d,e,f,g){var _=this
+t1:function t1(a,b,c,d,e,f,g,h){var _=this
 _.e=a
 _.f=b
-_.fx=c
-_.fy=d
-_.k1=e
-_.y2=f
-_.a=g},
+_.dy=c
+_.fx=d
+_.fy=e
+_.k1=f
+_.y2=g
+_.a=h},
 Sh:function Sh(){},
 Sl:function Sl(){},
 wv:function wv(a){var _=this
@@ -35714,15 +35715,16 @@ p.a.toString
 b.toString
 m=b
 return new M.ut(new K.q7(q,m,C.a9,C.a5,o,o),o)},
-PM:function(a){var s,r,q=this,p=null,o=q.a,n=o.fx
-n=n.b
-s=n
+PM:function(a){var s,r,q,p=this,o=null,n=p.a,m=n.fx
+m=m.b
+s=m
 if(s==null)s=C.bT
-n=o.e
-o=o.f
-r=q.gC5()
-q.a.toString
-return new S.vz(p,p,p,new S.a1r(),p,p,p,p,n,o,p,p,C.p7,q.gTJ(),"",p,C.B9,s,p,r,p,p,C.i0,!1,!1,!1,!1,q.gTx(),!1,p,p,p,new N.jo(q,t.By))},
+m=n.e
+r=n.f
+n=n.dy
+q=p.gC5()
+p.a.toString
+return new S.vz(o,o,o,new S.a1r(),o,o,o,o,m,r,o,o,C.p7,p.gTJ(),n,o,C.B9,s,o,q,o,o,C.i0,!1,!1,!1,!1,p.gTx(),!1,o,o,o,new N.jo(p,t.By))},
 O:function(a,b){var s,r=this.PM(b)
 this.a.toString
 s=this.d
@@ -56159,7 +56161,7 @@ q=$.a6c()
 p=o.a.c
 if(!q.b)q.a=p
 q=q.a?C.jZ:C.Ck
-return new S.t1(n,P.af(["home",new F.a2p(o),"extend",new F.a2q(o),"settings",new F.a2r(o),"about",new F.a2s()],t.O,t.gd),s,r,q,!1,null)}}
+return new S.t1(n,P.af(["home",new F.a2p(o),"extend",new F.a2q(o),"settings",new F.a2r(o),"about",new F.a2s()],t.O,t.gd),"Prayers Time",s,r,q,!1,null)}}
 F.a2u.prototype={
 $0:function(){this.a.ax(new F.a2t())},
 $S:3}
