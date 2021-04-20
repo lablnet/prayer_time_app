@@ -22,14 +22,15 @@ class _SettingsState extends State<Settings> {
     var latitude = prefs.getDouble("latitude") ?? null;
     var longitude = prefs.getDouble("longitude") ?? null;
 
-    prefs.setInt("method", item);
+    //prefs.setInt("method", item);
     print("settings");
     print(latitude);
     print(longitude);
     print(item);
-    Navigator.push(
+    /*Navigator.push(
         context, MaterialPageRoute(builder: (context) => Home(latitude:latitude, longitude: longitude, method: item,)));
 
+    */
   }
   @override
   Widget build(BuildContext context) {
@@ -48,13 +49,13 @@ class _SettingsState extends State<Settings> {
       items.add(
         ListTile(
             title: Text(
-              item,
+              item + i.toString(),
               style: TextStyle(
                 fontSize: 18,
               ),
             ),
           onTap: () async => {
-              NavigationsRoute(context, i)
+              NavigationsRoute(context, item)
           },
           tileColor: (i == widget.method)
               ? Colors.green[200]
