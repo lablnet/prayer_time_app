@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:prayer_time_app/config.dart';
 import 'package:prayer_time_app/pages/About.dart';
-import 'package:prayer_time_app/pages/Settings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 openUrl(url) async {

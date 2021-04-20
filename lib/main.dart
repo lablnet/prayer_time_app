@@ -6,7 +6,6 @@ import 'package:prayer_time_app/pages/About.dart';
 import 'package:prayer_time_app/pages/Home.dart';
 import 'package:prayer_time_app/pages/Settings.dart';
 import 'package:prayer_time_app/theme.dart';
-import 'package:prayer_time_app/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
