@@ -48,7 +48,6 @@ class _HomeState extends State<Home>
       HijriCalendar nowHijri = HijriCalendar.now();
       final DateFormat formatter = DateFormat('MMMM dd yyyy');
       final String formatted = formatter.format(now);
-       print(now.timeZoneOffset);
       parseTimeZoneOffset(now.timeZoneOffset);
       PrayTime prayerTime = PrayTime(method: widget.method);
       var times = prayerTime.getPrayerTimes({
