@@ -25,7 +25,7 @@ An app to find prayers/Ramadan timings for you exact location,
 
 ## Contribution
 You're welcome to contribute to this project.
-You should follow contribution guideline [Contribution guideline](https://github.com/lablnet/prayer_time_app/blob/master/CONTRIBUTING.md)
+You should follow contribution guideline [Contribution guideline](https://github.com/lablnet/prayer_time_app/blob/main/CONTRIBUTING.md)
 
 ## Development
 Get require dependencies. 
