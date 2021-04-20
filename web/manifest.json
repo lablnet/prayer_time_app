@@ -1,11 +1,11 @@
 {
-    "name": "prayer_time",
-    "short_name": "prayer_time",
-    "start_url": ".",
+    "name": "Prayer Time",
+    "short_name": "prayer_time_app",
+    "start_url": "prayer_time_app",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "An app to find prayers/ramazan timings for you exact location.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
