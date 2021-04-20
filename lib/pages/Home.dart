@@ -5,6 +5,7 @@ import 'package:prayer_time/prayer_time.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils.dart';
 import './Monthly.dart';
 
 
@@ -44,13 +45,6 @@ class _HomeState extends State<Home>
     _controller.dispose();
   }
 
-  double parseTimeZoneOffset(var offset)
-  {
-    var timezone = offset.toString();
-    var l = timezone.split(':');
-    var prepare = l[0] + '.' + l[1];
-    return (double.parse(prepare));
-  }
   Widget buildCard(BuildContext context) {
       DateTime now = DateTime.now();
       HijriCalendar nowHijri = HijriCalendar.now();
