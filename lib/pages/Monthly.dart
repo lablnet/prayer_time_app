@@ -38,11 +38,12 @@ class _MonthlyState extends State<Monthly>
     DateTime now = DateTime.now();
     HijriCalendar nowHijri = HijriCalendar.now();
     PrayTime prayerTime = PrayTime(method: widget.method);
-    List<TableRow> tbl = [];
+    List<DataRow> tbl = [];
     for (int i = 1; i <= 30; i++) {
       var date = now.add(Duration(days: i));
+      var hDate = HijriCalendar.fromDate(date);
       DateFormat formatter = DateFormat('MMMM dd yyyy');
-      String formatted = formatter.format(now);
+      String formatted = formatter.format(date);
 
       var times = prayerTime.getPrayerTimes({
         "year": date.year,
@@ -50,62 +51,85 @@ class _MonthlyState extends State<Monthly>
         "mday": date.day,
       }, widget.latitude, widget.longitude, parseTimeZoneOffset(now.timeZoneOffset));
 
+
+      Color color = Colors.transparent;
+      if (DateFormat('EEEE').format(date) == 'Sunday') {
+        color = Colors.black12;
+      }
+      if (DateFormat('EEEE').format(date) == 'Friday') {
+        color = Colors.greenAccent;
+      }
       tbl.add(
-          TableRow(
-            children: [
-              Text(formatted),
-              Text(times[0]),
-              Text(times[1]),
-              Text(times[2]),
-              Text(times[3]),
-              Text(times[5]),
-              Text(times[6]),
+          DataRow(
+            color: MaterialStateColor.resolveWith((states) => color),
+            cells: [
+              DataCell(Text(hDate.toFormat("MMMM dd yyyy"))),
+              DataCell(Text(formatted)),
+              DataCell(Text(times[0])),
+              DataCell(Text(times[1])),
+              DataCell(Text(times[2])),
+              DataCell(Text(times[3])),
+              DataCell(Text(times[5])),
+              DataCell(Text(times[6])),
             ],
           )
       );
     }
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: <Widget>
-        [
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
 
-          Divider(),
-          Flexible(
-            child: Table(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+              columns: const <DataColumn>[
+                DataColumn(
+                  label: Text(
+                    'Date',
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Date 1',
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Sehar Time/Fajr',
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Sunrise',
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Dhuhr',
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Asr',
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Iftar Time/Maghrib',
+                  ),
+                ),
+                DataColumn(
+                  label: Text(
+                    'Isha',
+                  ),
+                ),
+              ],
+              rows: <DataRow>[
 
-                border: TableBorder.all(),
-                children: [
-                  TableRow( children: [
-                    Column(children:[
-                      Text('Date')
-                    ]),
-                    Column(children:[
-                      Text('Fajr')
-                    ]),
-                    Column(children:[
-                      Text('Sunrise')
-                    ]),
-                    Column(children:[
-                      Text('Dhuhr')
-                    ]),
-                    Column(children:[
-                      Text('Asr')
-                    ]),
-                    Column(children:[
-                      Text('Maghrib')
-                    ]),
-                    Column(children:[
-                      Text('Isha')
-                    ]),
-
-                  ]),
-
-                  ...tbl,
-                ]),
-          ),
-
-        ],
+                ...tbl,
+              ]),
+        ),
       ),
     );
   }
@@ -115,49 +139,13 @@ class _MonthlyState extends State<Monthly>
 
     Widget body = null;
     if (widget.latitude == null)  {
-      body = Center(
-
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.add_location, size: 80),
-
-            Text("Need your Location", style: TextStyle(
-                fontSize: 26
-            ),
-              textAlign: TextAlign.center,
-            ),
-            Text("Your location is required for accurate prayer time calculations.", style: TextStyle(
-              fontSize: 15,
-            ),
-              textAlign: TextAlign.center,
-            ),
-            ElevatedButton(
-              child: Text("Get location"),
-              onPressed: () async {
-                await _getCurrentLocation();
-              },
-            ),
-          ],
-        ),
+      body = Center(child: null,
       );
     } else
       body = buildCard(context);
     return Scaffold(
-      appBar: customAppBar(context, "Home"),
+      appBar: customAppBar(context, "Monthly View"),
       body: body,
     );
-  }
-
-  _getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    setState(()  {
-      widget.latitude = position.latitude;
-      widget.longitude = position.longitude;
-    });
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setDouble("latitude", position.latitude);
-    prefs.setDouble("longitude", position.longitude);
-
   }
 }

@@ -78,12 +78,12 @@ class _HomeState extends State<Home>
             Divider(),
             ListTile(
               title: Text(
-                formatted,
+                  nowHijri.toFormat("MMMM dd yyyy"),
                 style: TextStyle(
                   fontSize: 30,
                 ),
               ),
-              subtitle: Text(nowHijri.toFormat("MMMM dd yyyy"),
+              subtitle: Text(formatted,
                   style: TextStyle(
                     fontSize: 20,
                   )),
