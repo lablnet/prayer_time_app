@@ -6,6 +6,7 @@ import 'package:hijri/hijri_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils.dart';
+import 'Monthly.dart';
 
 
 class Home extends StatefulWidget {
@@ -170,7 +171,9 @@ class _HomeState extends State<Home>
             TextButton(
               child: Text("Extend View"),
                onPressed: () => {
-                 Navigator.pushNamed(context, 'extend')
+                 Navigator.push(
+                     context, MaterialPageRoute(builder: (context) => Monthly(latitude: widget.latitude, longitude: widget.longitude, method: widget.method)
+                 ))
             },
             )
           ],
