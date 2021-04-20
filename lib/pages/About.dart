@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:prayer_time_app/components/custom_app_bar.dart';
 import 'package:prayer_time_app/components/list_header.dart';
+import 'package:prayer_time_app/utils.dart';
 
 class About extends StatelessWidget {
   @override
@@ -22,6 +23,13 @@ class About extends StatelessWidget {
             ListTile(
               title: Text("License"),
               subtitle: Text("GNU GPL 3"),
+            ),
+            ListTile(
+              title: Text("Special Thanks"),
+              subtitle: Text("http://praytimes.org/"),
+              onLongPress: () async => {
+                await openUrl("http://praytimes.org/")
+              },
             ),
             ListHeader(title: "Flutter"),
             ListTile(
