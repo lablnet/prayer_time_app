@@ -2,7 +2,7 @@
 
 An app to find prayers/Ramadan timings for you exact location,
 
-**This project use [lablnet/prayer_time](https://github.com/lablnet/prayer_time) dependency.**
+**This project use [alphasofthub/prayer_time](https://github.com/alphasofthub/prayer_time) dependency.**
 
 ## Features
 1. Shows the times for Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha.
