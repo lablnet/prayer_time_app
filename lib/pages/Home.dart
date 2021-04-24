@@ -47,7 +47,7 @@ class _HomeState extends State<Home>
   Widget buildCard(BuildContext context) {
       DateTime now = DateTime.now();
       HijriCalendar nowHijri = HijriCalendar.now();
-      final DateFormat formatter = DateFormat('MMMM dd yyyy');
+      final DateFormat formatter = DateFormat('MMMM dd, yyyy');
       final String formatted = formatter.format(now);
       parseTimeZoneOffset(now.timeZoneOffset);
       PrayTime prayerTime = PrayTime(method: widget.method);
@@ -78,7 +78,7 @@ class _HomeState extends State<Home>
             Divider(),
             ListTile(
               title: Text(
-                  nowHijri.toFormat("MMMM dd yyyy"),
+                  nowHijri.toFormat("MMMM dd, yyyy"),
                 style: TextStyle(
                   fontSize: 30,
                 ),
@@ -92,7 +92,7 @@ class _HomeState extends State<Home>
 
             ListTile(
               title: Text(
-                "Sehar Time/Fajr",
+                "Fajr/Sehar Time",
                 style: TextStyle(
                   fontSize: 18,
                 ),
@@ -144,7 +144,7 @@ class _HomeState extends State<Home>
             SizedBox(height: 12,),
             ListTile(
               title: Text(
-                "Iftar Time/Maghrib",
+                "Maghrib/Iftar Time",
                 style: TextStyle(
                   fontSize: 18,
                 ),

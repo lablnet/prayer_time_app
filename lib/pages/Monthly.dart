@@ -42,7 +42,7 @@ class _MonthlyState extends State<Monthly>
     for (int i = 1; i <= 30; i++) {
       var date = now.add(Duration(days: i));
       var hDate = HijriCalendar.fromDate(date);
-      DateFormat formatter = DateFormat('MMMM dd yyyy');
+      DateFormat formatter = DateFormat('MMMM dd, yyyy');
       String formatted = formatter.format(date);
 
       var times = prayerTime.getPrayerTimes({
@@ -63,7 +63,7 @@ class _MonthlyState extends State<Monthly>
           DataRow(
             color: MaterialStateColor.resolveWith((states) => color),
             cells: [
-              DataCell(Text(hDate.toFormat("MMMM dd yyyy"))),
+              DataCell(Text(hDate.toFormat("MMMM dd, yyyy"))),
               DataCell(Text(formatted)),
               DataCell(Text(times[0])),
               DataCell(Text(times[1])),
@@ -86,17 +86,17 @@ class _MonthlyState extends State<Monthly>
               columns: const <DataColumn>[
                 DataColumn(
                   label: Text(
-                    'Date',
+                    'Hijri',
                   ),
                 ),
                 DataColumn(
                   label: Text(
-                    'Date 1',
+                    'Gregorian',
                   ),
                 ),
                 DataColumn(
                   label: Text(
-                    'Sehar Time/Fajr',
+                    'Fajr/Sehar Time',
                   ),
                 ),
                 DataColumn(
@@ -116,7 +116,7 @@ class _MonthlyState extends State<Monthly>
                 ),
                 DataColumn(
                   label: Text(
-                    'Iftar Time/Maghrib',
+                    'Maghrib/Iftar Time',
                   ),
                 ),
                 DataColumn(
