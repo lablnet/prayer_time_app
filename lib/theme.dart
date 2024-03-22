@@ -4,7 +4,7 @@ ThemeData lightTheme() {
   return ThemeData(
     brightness: Brightness.light,
     primaryColor: Color(0xFFFFFFFF),
-    accentColor: Colors.blue,
+    hintColor: Colors.blue,
   );
 }
 
@@ -12,6 +12,6 @@ ThemeData darkTheme() {
   return ThemeData(
     brightness: Brightness.dark,
     primaryColor: Colors.black,
-    accentColor: Colors.blue,
+    hintColor: Colors.blue,
   );
 }

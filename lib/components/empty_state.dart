@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 class EmptyState extends StatelessWidget {
   EmptyState({
     this.icon,
-    this.text,
+    required this.text,
     this.tSize,
     this.iSize,
   });
 
-  final IconData icon;
+  final IconData? icon;
   final String text;
   final iSize;
   final tSize;

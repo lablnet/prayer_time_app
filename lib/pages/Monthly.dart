@@ -1,18 +1,16 @@
 import "package:flutter/material.dart";
-import 'package:geolocator/geolocator.dart';
 import 'package:prayer_time_app/components/custom_app_bar.dart';
 import 'package:prayer_time/prayer_time.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils.dart';
 
 
 class Monthly extends StatefulWidget {
-  double latitude;
-  double longitude;
-  int method;
+  double? latitude;
+  double? longitude;
+  int? method;
   Monthly({this.latitude, this.longitude, this.method});
   @override
   _MonthlyState createState() => _MonthlyState();
@@ -20,7 +18,7 @@ class Monthly extends StatefulWidget {
 
 class _MonthlyState extends State<Monthly>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void initState() {
@@ -37,7 +35,7 @@ class _MonthlyState extends State<Monthly>
   Widget buildCard(BuildContext context) {
     DateTime now = DateTime.now();
     HijriCalendar nowHijri = HijriCalendar.now();
-    PrayTime prayerTime = PrayTime(method: widget.method);
+    PrayTime prayerTime = PrayTime(method: widget.method!);
     List<DataRow> tbl = [];
     for (int i = 1; i <= 30; i++) {
       var date = now.add(Duration(days: i));
@@ -49,7 +47,7 @@ class _MonthlyState extends State<Monthly>
         "year": date.year,
         "mon": date.month,
         "mday": date.day,
-      }, widget.latitude, widget.longitude, parseTimeZoneOffset(now.timeZoneOffset));
+      }, widget.latitude!, widget.longitude!, parseTimeZoneOffset(now.timeZoneOffset));
 
 
       Color color = Colors.transparent;
@@ -137,7 +135,7 @@ class _MonthlyState extends State<Monthly>
   @override
   Widget build(BuildContext context) {
 
-    Widget body = null;
+    Widget? body = null;
     if (widget.latitude == null)  {
       body = Center(child: null,
       );

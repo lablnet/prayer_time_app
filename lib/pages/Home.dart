@@ -20,9 +20,9 @@ class Home extends StatefulWidget {
     6: "Custom",
     7: 'Institute of Geophysics, University of Tehran'
   };
-  double latitude;
-  double longitude;
-  int method;
+  double? latitude;
+  double? longitude;
+  int? method;
   Home({this.latitude, this.longitude, this.method});
   @override
   _HomeState createState() => _HomeState();
@@ -30,7 +30,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void initState() {
@@ -50,12 +50,12 @@ class _HomeState extends State<Home>
       final DateFormat formatter = DateFormat('MMMM dd, yyyy');
       final String formatted = formatter.format(now);
       parseTimeZoneOffset(now.timeZoneOffset);
-      PrayTime prayerTime = PrayTime(method: widget.method);
+      PrayTime prayerTime = PrayTime(method: widget.method!);
       var times = prayerTime.getPrayerTimes({
         "year": now.year,
         "mon": now.month,
         "mday": now.day,
-      }, widget.latitude, widget.longitude, parseTimeZoneOffset(now.timeZoneOffset));
+      }, widget.latitude!, widget.longitude!, parseTimeZoneOffset(now.timeZoneOffset));
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(
@@ -172,7 +172,7 @@ class _HomeState extends State<Home>
               child: Text("Extend View"),
                onPressed: () => {
                  Navigator.push(
-                     context, MaterialPageRoute(builder: (context) => Monthly(latitude: widget.latitude, longitude: widget.longitude, method: widget.method)
+                     context, MaterialPageRoute(builder: (context) => Monthly(latitude: widget.latitude!, longitude: widget.longitude!, method: widget.method!)
                  ))
             },
             )
@@ -184,7 +184,7 @@ class _HomeState extends State<Home>
   @override
   Widget build(BuildContext context) {
 
-    Widget body = null;
+    Widget? body = null;
     if (widget.latitude == null)  {
       body = Center(
 

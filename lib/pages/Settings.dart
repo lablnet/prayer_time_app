@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Home.dart';
 
 class Settings extends StatefulWidget {
-  double latitude;
-  double longitude;
-  int method;
+  double? latitude;
+  double? longitude;
+  int? method;
   Settings({this.latitude, this.longitude, this.method});
 
 

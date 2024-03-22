@@ -10,8 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   bool theme = false;
-  double latitude = null;
-  double longitude = null;
+  double? latitude;
+  double? longitude;
   int method = 1;
 
   try {
@@ -35,8 +35,8 @@ Future<void> main() async {
 class PrayerTimeApp extends StatefulWidget {
   PrayerTimeApp(this.theme, this.latitude, this.longitude, this.method);
   final bool theme;
-  final double latitude;
-  final double longitude;
+  final double? latitude;
+  final double? longitude;
   final int method;
 
   @override
@@ -63,7 +63,7 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
       themeMode: currentTheme.currentTheme(theme: widget.theme),
       routes: {
         'home': (context) => Home(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
-        'extend': (context) => Monthly(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
+        'extend': (context) => Monthly(latitude: widget.latitude!,longitude: widget.longitude!, method: widget.method,),
         'settings': (context) => Settings(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
         'about': (context) => About(),
       },
