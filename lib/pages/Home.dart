@@ -56,6 +56,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       "mday": now.day,
     }, widget.latitude!, widget.longitude!,
         parseTimeZoneOffset(now.timeZoneOffset));
+    // remove 6th index from the list, because it is not required.
+    times.removeAt(5);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView(
@@ -88,93 +90,20 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 )),
           ),
           Divider(),
-          ListTile(
-            title: Text(
-              "Fajr/Sehar Time",
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            subtitle: Text(times[0],
+          ...List.generate(times.length, (index) {
+            return ListTile(
+              title: Text(
+                getPrayerName(index),
                 style: TextStyle(
-                  fontSize: 26,
-                )),
-          ),
-          SizedBox(
-            height: 12,
-          ),
-          ListTile(
-            title: Text(
-              "Sunrise",
-              style: TextStyle(
-                fontSize: 18,
+                  fontSize: 18,
+                ),
               ),
-            ),
-            subtitle: Text(times[1],
-                style: TextStyle(
-                  fontSize: 26,
-                )),
-          ),
-          SizedBox(
-            height: 12,
-          ),
-          ListTile(
-            title: Text(
-              "Dhuhr",
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            subtitle: Text(times[2],
-                style: TextStyle(
-                  fontSize: 26,
-                )),
-          ),
-          SizedBox(
-            height: 12,
-          ),
-          ListTile(
-            title: Text(
-              "Asr",
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            subtitle: Text(times[3],
-                style: TextStyle(
-                  fontSize: 26,
-                )),
-          ),
-          SizedBox(
-            height: 12,
-          ),
-          ListTile(
-            title: Text(
-              "Maghrib/Iftar Time",
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            subtitle: Text(times[5],
-                style: TextStyle(
-                  fontSize: 26,
-                )),
-          ),
-          SizedBox(
-            height: 12,
-          ),
-          ListTile(
-            title: Text(
-              "Isha",
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            subtitle: Text(times[6],
-                style: TextStyle(
-                  fontSize: 26,
-                )),
-          ),
+              subtitle: Text(times[index],
+                  style: TextStyle(
+                    fontSize: 26,
+                  )),
+            );
+          }),
           Divider(),
           TextButton(
             child: Text("Extend View"),
