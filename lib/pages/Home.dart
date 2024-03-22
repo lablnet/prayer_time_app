@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils.dart';
 import 'Monthly.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 
 class Home extends StatefulWidget {
   Map methods = {
@@ -28,8 +28,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home>
-    with SingleTickerProviderStateMixin {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -45,169 +44,181 @@ class _HomeState extends State<Home>
   }
 
   Widget buildCard(BuildContext context) {
-      DateTime now = DateTime.now();
-      HijriCalendar nowHijri = HijriCalendar.now();
-      final DateFormat formatter = DateFormat('MMMM dd, yyyy');
-      final String formatted = formatter.format(now);
-      parseTimeZoneOffset(now.timeZoneOffset);
-      PrayTime prayerTime = PrayTime(method: widget.method!);
-      var times = prayerTime.getPrayerTimes({
-        "year": now.year,
-        "mon": now.month,
-        "mday": now.day,
-      }, widget.latitude!, widget.longitude!, parseTimeZoneOffset(now.timeZoneOffset));
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: <Widget>
-          [
-            Center(
-              child: Column(
-                children: [
-                  Text("Today", style: TextStyle(
-                      fontSize: 16
-                  ),
-                  ),
-                  Text(widget.methods[widget.method], style: TextStyle(
-                      fontSize: 13
-                  ),
-                  ),
-                ],
-              ),
-            ),
-            Divider(),
-            ListTile(
-              title: Text(
-                  nowHijri.toFormat("MMMM dd, yyyy"),
-                style: TextStyle(
-                  fontSize: 30,
+    DateTime now = DateTime.now();
+    HijriCalendar nowHijri = HijriCalendar.now();
+    final DateFormat formatter = DateFormat('MMMM dd, yyyy');
+    final String formatted = formatter.format(now);
+    parseTimeZoneOffset(now.timeZoneOffset);
+    PrayTime prayerTime = PrayTime(method: widget.method!);
+    var times = prayerTime.getPrayerTimes({
+      "year": now.year,
+      "mon": now.month,
+      "mday": now.day,
+    }, widget.latitude!, widget.longitude!,
+        parseTimeZoneOffset(now.timeZoneOffset));
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListView(
+        children: <Widget>[
+          Center(
+            child: Column(
+              children: [
+                Text(
+                  "Today",
+                  style: TextStyle(fontSize: 16),
                 ),
-              ),
-              subtitle: Text(formatted,
-                  style: TextStyle(
-                    fontSize: 20,
-                  )),
-            ),
-            Divider(),
-
-            ListTile(
-              title: Text(
-                "Fajr/Sehar Time",
-                style: TextStyle(
-                  fontSize: 18,
+                Text(
+                  widget.methods[widget.method],
+                  style: TextStyle(fontSize: 13),
                 ),
-              ),
-              subtitle: Text(times[0],
-                  style: TextStyle(
-                    fontSize: 26,
-                  )),
+              ],
             ),
-            SizedBox(height: 12,),
-            ListTile(
-              title: Text(
-                "Sunrise",
+          ),
+          Divider(),
+          ListTile(
+            title: Text(
+              nowHijri.toFormat("MMMM dd, yyyy"),
+              style: TextStyle(
+                fontSize: 30,
+              ),
+            ),
+            subtitle: Text(formatted,
                 style: TextStyle(
-                  fontSize: 18,
-                ),
+                  fontSize: 20,
+                )),
+          ),
+          Divider(),
+          ListTile(
+            title: Text(
+              "Fajr/Sehar Time",
+              style: TextStyle(
+                fontSize: 18,
               ),
-              subtitle: Text(times[1],
-                  style: TextStyle(
-                    fontSize: 26,
-                  )),
             ),
-            SizedBox(height: 12,),
-            ListTile(
-              title: Text(
-                "Dhuhr",
+            subtitle: Text(times[0],
                 style: TextStyle(
-                  fontSize: 18,
-                ),
+                  fontSize: 26,
+                )),
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          ListTile(
+            title: Text(
+              "Sunrise",
+              style: TextStyle(
+                fontSize: 18,
               ),
-              subtitle: Text(times[2],
-                  style: TextStyle(
-                    fontSize: 26,
-                  )),
             ),
-            SizedBox(height: 12,),
-            ListTile(
-              title: Text(
-                "Asr",
+            subtitle: Text(times[1],
                 style: TextStyle(
-                  fontSize: 18,
-                ),
+                  fontSize: 26,
+                )),
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          ListTile(
+            title: Text(
+              "Dhuhr",
+              style: TextStyle(
+                fontSize: 18,
               ),
-              subtitle: Text(times[3],
-                  style: TextStyle(
-                    fontSize: 26,
-                  )),
             ),
-            SizedBox(height: 12,),
-            ListTile(
-              title: Text(
-                "Maghrib/Iftar Time",
+            subtitle: Text(times[2],
                 style: TextStyle(
-                  fontSize: 18,
-                ),
+                  fontSize: 26,
+                )),
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          ListTile(
+            title: Text(
+              "Asr",
+              style: TextStyle(
+                fontSize: 18,
               ),
-              subtitle: Text(times[5],
-                  style: TextStyle(
-                    fontSize: 26,
-                  )),
             ),
-            SizedBox(height: 12,),
-            ListTile(
-              title: Text(
-                "Isha",
+            subtitle: Text(times[3],
                 style: TextStyle(
-                  fontSize: 18,
-                ),
+                  fontSize: 26,
+                )),
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          ListTile(
+            title: Text(
+              "Maghrib/Iftar Time",
+              style: TextStyle(
+                fontSize: 18,
               ),
-              subtitle: Text(times[6],
-                  style: TextStyle(
-                    fontSize: 26,
-                  )),
             ),
-            Divider(),
-            TextButton(
-              child: Text("Extend View"),
-               onPressed: () => {
-                 Navigator.push(
-                     context, MaterialPageRoute(builder: (context) => Monthly(latitude: widget.latitude!, longitude: widget.longitude!, method: widget.method!)
-                 ))
+            subtitle: Text(times[5],
+                style: TextStyle(
+                  fontSize: 26,
+                )),
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          ListTile(
+            title: Text(
+              "Isha",
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            subtitle: Text(times[6],
+                style: TextStyle(
+                  fontSize: 26,
+                )),
+          ),
+          Divider(),
+          TextButton(
+            child: Text("Extend View"),
+            onPressed: () => {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Monthly(
+                          latitude: widget.latitude!,
+                          longitude: widget.longitude!,
+                          method: widget.method!)))
             },
-            )
-          ],
-        ),
-      );
+          )
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-
     Widget? body = null;
-    if (widget.latitude == null)  {
+    if (widget.latitude == null) {
       body = Center(
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(Icons.add_location, size: 80),
-
-            Text("Need your Location", style: TextStyle(
-                fontSize: 26
-            ),
+            Text(
+              "Need your Location",
+              style: TextStyle(fontSize: 26),
               textAlign: TextAlign.center,
             ),
-            Text("Your location is required for accurate prayer time calculations.", style: TextStyle(
-              fontSize: 15,
-            ),
+            Text(
+              "Your location is required for accurate prayer time calculations.",
+              style: TextStyle(
+                fontSize: 15,
+              ),
               textAlign: TextAlign.center,
             ),
             ElevatedButton(
               child: Text("Get location"),
               onPressed: () async {
-                  await _getCurrentLocation();
-               },
+                await _getCurrentLocation();
+              },
             ),
           ],
         ),
@@ -220,15 +231,39 @@ class _HomeState extends State<Home>
     );
   }
 
-    _getCurrentLocation() async {
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      setState(()  {
+  _getCurrentLocation() async {
+    PermissionStatus status = await Permission.location.request();
+    if (status.isGranted) {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      setState(() {
         widget.latitude = position.latitude;
         widget.longitude = position.longitude;
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setDouble("latitude", position.latitude);
       prefs.setDouble("longitude", position.longitude);
-
+    } else {
+      // show error dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Location Permission"),
+            content: Text(
+                "Location permission is required to get accurate prayer times."),
+            actions: <Widget>[
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        },
+      );
+      print("Permission Denied");
+    }
   }
 }
