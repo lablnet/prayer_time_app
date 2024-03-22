@@ -17,13 +17,13 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: "3.3.1"
 
 dependencies:
-  prayer_time: ^1.0.0
-  hijri: ^2.0.3
+  prayer_time: ^2.0.0
+  hijri: ^3.0.0
   shared_preferences:
-  geolocator: ^6.1.1
+  geolocator: ^11.0.0
   intl:
   url_launcher:
 
