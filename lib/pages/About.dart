@@ -14,7 +14,7 @@ class About extends StatelessWidget {
             ListHeader(title: "App"),
             ListTile(
               title: Text("Prayers Time"),
-              subtitle: Text("Version: 1.0.0"),
+              subtitle: Text("Version: 1.0.1"),
             ),
             ListTile(
               title: Text("Copyright"),
@@ -34,7 +34,7 @@ class About extends StatelessWidget {
             ListHeader(title: "Flutter"),
             ListTile(
               title: Text("Flutter version"),
-              subtitle: Text("2.0.3"),
+              subtitle: Text("3.19.3"),
             ),
             ListTile(
               title: Text("SDK Channel"),
@@ -42,7 +42,7 @@ class About extends StatelessWidget {
             ),
             ListTile(
               title: Text("Dark SDK version"),
-              subtitle: Text("2.12.4"),
+              subtitle: Text("3.3.1"),
             ),
           ],
         ),
