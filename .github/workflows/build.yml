@@ -11,8 +11,8 @@ jobs:
     name: Build Flutter (Web)
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - uses: subosito/flutter-action@v1
+    - uses: actions/checkout@v4.1.1
+    - uses: subosito/flutter-action@v2.14.0
       with:
           channel: 'dev'
     - run: flutter pub get
@@ -21,6 +21,6 @@ jobs:
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@3.6.2
       with:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages
         FOLDER: build/web
