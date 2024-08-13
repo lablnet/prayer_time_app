@@ -48,7 +48,7 @@ android {
     defaultConfig {
         applicationId "prayer_time.lablnet.app"
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 33
+        targetSdkVersion 34
         minSdkVersion flutter.minSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
