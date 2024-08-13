@@ -21,9 +21,9 @@ Future<void> main() async {
     latitude = prefs.getDouble("latitude") ?? null;
     longitude = prefs.getDouble("longitude") ?? null;
     method = prefs.getInt("method") ?? 1;
-
+  
     // get the system theme.
-    var brightness = SchedulerBinding.instance.window.platformBrightness;
+    var brightness = WidgetsBinding.instance.window.platformBrightness;
     theme = brightness == Brightness.dark;
 
 
