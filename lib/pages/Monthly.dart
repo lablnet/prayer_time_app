@@ -48,7 +48,7 @@ class _MonthlyState extends State<Monthly> with SingleTickerProviderStateMixin {
       DateFormat formatter = DateFormat('MMMM dd, yyyy');
       String formattedDate = formatter.format(date);
 
-      var times = prayerTime.getTimes(now);
+      var times = prayerTime.getTimes(date);
 
       cards.add(
         Card(
