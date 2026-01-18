@@ -35,6 +35,7 @@ class _MonthlyState extends State<Monthly> with SingleTickerProviderStateMixin {
 
   Widget buildCard(BuildContext context) {
     DateTime now = DateTime.now();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     PrayerTimes prayerTime = PrayerTimes(
         method: widget.method!,
         latitude: widget.latitude!,
@@ -50,22 +51,121 @@ class _MonthlyState extends State<Monthly> with SingleTickerProviderStateMixin {
       var times = prayerTime.getTimes(date);
 
       cards.add(
-        Card(
-          margin: EdgeInsets.all(8.0),
+        Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isDark
+                  ? [
+                      const Color(0xFF1e1e2e),
+                      const Color(0xFF2d2d3d),
+                    ]
+                  : [
+                      Colors.white,
+                      const Color(0xFFf8f9fa),
+                    ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${hDate.toFormat("MMMM dd, yyyy")} / $formattedDate',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                SizedBox(height: 8),
+                // Date Header
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: isDark
+                          ? [
+                              const Color(0xFF5f72bd),
+                              const Color(0xFF9921e8),
+                            ]
+                          : [
+                              const Color(0xFF667eea),
+                              const Color(0xFF764ba2),
+                            ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        hDate.toFormat("MMMM dd, yyyy"),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        formattedDate,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Prayer Times
                 ...List.generate(times.length, (index) {
                   return Padding(
-                    padding: const EdgeInsets.only(top: 4.0),
-                    child: Text('${getPrayerName(index)} : ${times[index]}',
-                        style: TextStyle(fontSize: 14)),
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(0xFF00adb5)
+                                    : const Color(0xFF667eea),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              getPrayerName(index),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: isDark
+                                    ? const Color(0xFFf5f6fa)
+                                    : const Color(0xFF2d3436),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          times[index],
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? const Color(0xFF00adb5)
+                                : const Color(0xFF667eea),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 }),
               ],
@@ -75,17 +175,74 @@ class _MonthlyState extends State<Monthly> with SingleTickerProviderStateMixin {
       );
     }
     return SingleChildScrollView(
-      child: Column(children: cards),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(children: cards),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     Widget? body;
     if (widget.latitude == null || widget.longitude == null) {
-      body = Center(child: Text("Please set location"));
+      body = Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? [
+                    const Color(0xFF0f0f1e),
+                    const Color(0xFF1a1a2e),
+                  ]
+                : [
+                    const Color(0xFFf5f7fa),
+                    const Color(0xFFc3cfe2),
+                  ],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(
+                Icons.location_off,
+                size: 80,
+                color: Colors.grey,
+              ),
+              SizedBox(height: 16),
+              Text(
+                "Please set location",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     } else {
-      body = buildCard(context);
+      body = Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? [
+                    const Color(0xFF0f0f1e),
+                    const Color(0xFF1a1a2e),
+                  ]
+                : [
+                    const Color(0xFFf5f7fa),
+                    const Color(0xFFc3cfe2),
+                  ],
+          ),
+        ),
+        child: buildCard(context),
+      );
     }
     return Scaffold(
       appBar: customAppBar(context, "Monthly View"),
