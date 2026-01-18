@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils.dart';
 import 'Monthly.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:prayer_time_app/services/widget_service.dart';
 
 class Home extends StatefulWidget {
   static const Map methodsMap = {
@@ -714,6 +715,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setDouble("latitude", position.latitude);
       prefs.setDouble("longitude", position.longitude);
+      
+      // Update widget
+      await WidgetService.updateWidget(position.latitude, position.longitude, widget.method ?? 1);
     } else {
       // show error dialog
       showDialog(

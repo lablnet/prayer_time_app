@@ -5,7 +5,7 @@ import 'package:prayer_time_app/utils.dart';
 class WidgetService {
   static const String _groupId = 'group.prayer_time_app';
   static const String _iosWidget = 'PrayerWidget';
-  static const String _androidWidget = 'PrayerWidget';
+  static const String _androidWidget = 'prayer_time.PrayerWidget';
 
   static Future<void> updateWidget(double latitude, double longitude, int method) async {
     DateTime now = DateTime.now();
@@ -17,7 +17,10 @@ class WidgetService {
       "mday": now.day,
     }, latitude, longitude, parseTimeZoneOffset(now.timeZoneOffset));
 
-    String nextPrayerName = "Fajr";
+    // Ensure group ID is set
+    await HomeWidget.setAppGroupId(_groupId);
+
+    String nextPrayerName = _getPrayerName(0);
     String nextPrayerTime = times[0];
     
     int nextPrayerIndex = -1;
@@ -37,8 +40,16 @@ class WidgetService {
     }
 
     if (nextPrayerIndex == -1) {
-      nextPrayerName = "Fajr";
-      nextPrayerTime = times[0];
+      // Calculate for tomorrow
+      DateTime tomorrow = now.add(const Duration(days: 1));
+      var tomorrowTimes = prayerTime.getPrayerTimes({
+        "year": tomorrow.year,
+        "mon": tomorrow.month,
+        "mday": tomorrow.day,
+      }, latitude, longitude, parseTimeZoneOffset(tomorrow.timeZoneOffset));
+
+      nextPrayerName = _getPrayerName(0);
+      nextPrayerTime = tomorrowTimes[0];
     }
 
     try {

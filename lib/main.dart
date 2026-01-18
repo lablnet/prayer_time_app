@@ -33,13 +33,23 @@ Future<void> main() async {
     bool notificationsEnabled = prefs.getBool("notifications_enabled") ?? true;
   
     // Schedule notifications if location exists
+    // Schedule notifications if location exists
     if (latitude != null && longitude != null) {
+      try {
+        await WidgetService.updateWidget(latitude, longitude, method);
+      } catch (e) {
+        print("Error in updateWidget: $e");
+      }
+
       if (notificationsEnabled) {
-        await NotificationService().schedulePrayerNotifications(latitude, longitude, method);
+        try {
+          await NotificationService().schedulePrayerNotifications(latitude, longitude, method);
+        } catch (e) {
+          print("Error scheduling notifications: $e");
+        }
       } else {
         await NotificationService().cancelAllNotifications();
       }
-      await WidgetService.updateWidget(latitude, longitude, method);
     }
 
     // get the system theme.
