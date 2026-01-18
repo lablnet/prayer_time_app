@@ -47,6 +47,33 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _controller.dispose();
   }
 
+  /// Parses time strings like "5:30 AM", "17:30", or "5:30 PM" into hour/minute
+  Map<String, int>? _parseTime(String timeStr) {
+    timeStr = timeStr.trim().toUpperCase();
+    bool isPM = timeStr.contains('PM');
+    bool isAM = timeStr.contains('AM');
+    
+    // Remove AM/PM suffix
+    timeStr = timeStr.replaceAll('AM', '').replaceAll('PM', '').trim();
+    
+    List<String> parts = timeStr.split(':');
+    if (parts.length < 2) return null;
+    
+    int? hour = int.tryParse(parts[0].trim());
+    int? minute = int.tryParse(parts[1].trim());
+    
+    if (hour == null || minute == null) return null;
+    
+    // Convert 12-hour to 24-hour
+    if (isPM && hour != 12) {
+      hour += 12;
+    } else if (isAM && hour == 12) {
+      hour = 0;
+    }
+    
+    return {'hour': hour, 'minute': minute};
+  }
+
   Widget buildCard(BuildContext context) {
     DateTime now = DateTime.now();
     HijriCalendar nowHijri = HijriCalendar.now();
@@ -54,17 +81,65 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     final String formatted = formatter.format(now);
     parseTimeZoneOffset(now.timeZoneOffset);
     PrayTime prayerTime = PrayTime(method: widget.method!);
+
     var times = prayerTime.getPrayerTimes({
       "year": now.year,
       "mon": now.month,
       "mday": now.day,
     }, _latitude!, _longitude!,
         parseTimeZoneOffset(now.timeZoneOffset));
-    // remove 6th index from the list, because it is not required.
-    times.removeAt(5);
+    
+    // Ramadan Mode: Sehri (Fajr) and Iftar (Maghrib)
+    // In our list: 0: Fajr, 1: Sunrise, 2: Dhuhr, 3: Asr, 4: Sunset, 5: Maghrib, 6: Isha
+    String sehriTime = times[0];
+    String iftarTime = times[5];
+    bool isRamadan = nowHijri.hMonth == 9;
+
+    // Filter times for display (Remove Sunset)
+    List<String> displayTimes = List.from(times);
+    displayTimes.removeAt(4); // Remove Sunset
     
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
+    // Find next prayer
+    int nextPrayerIndex = -1;
+    String nextPrayerName = "";
+    String nextPrayerTime = "";
+    Duration timeRemaining = Duration.zero;
+
+    for (int i = 0; i < displayTimes.length; i++) {
+      var parsed = _parseTime(displayTimes[i]);
+      if (parsed == null) continue;
+      
+      int hour = parsed['hour']!;
+      int minute = parsed['minute']!;
+
+      DateTime pTime = DateTime(now.year, now.month, now.day, hour, minute);
+      
+      // If this prayer is in the future, it's the next one
+      if (pTime.isAfter(now)) {
+        nextPrayerIndex = i;
+        nextPrayerName = getPrayerName(i);
+        nextPrayerTime = displayTimes[i];
+        timeRemaining = pTime.difference(now);
+        break;
+      }
+    }
+    
+    // If no more prayers today, next is tomorrow's Fajr
+    if (nextPrayerIndex == -1) {
+       nextPrayerName = "Sehar Time/Fajr";
+       nextPrayerTime = displayTimes[0];
+       nextPrayerIndex = 0;
+       
+       // Calculate time until tomorrow's Fajr
+       var parsed = _parseTime(displayTimes[0]);
+       if (parsed != null) {
+         DateTime tomorrowFajr = DateTime(now.year, now.month, now.day + 1, parsed['hour']!, parsed['minute']!);
+         timeRemaining = tomorrowFajr.difference(now);
+       }
+    }
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -86,16 +161,25 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         children: <Widget>[
           // Header Card with Gradient
           _buildHeaderCard(context, nowHijri, formatted, isDark),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
+
+          // Upcoming Prayer Card
+          _buildUpcomingPrayerCard(context, nextPrayerName, nextPrayerTime, timeRemaining, isDark),
+          const SizedBox(height: 16),
+
+          // Ramadan Mode Card
+          if (isRamadan) _buildRamadanCard(context, sehriTime, iftarTime, isDark),
+          if (isRamadan) const SizedBox(height: 16),
           
           // Prayer Times Grid
-          ...List.generate(times.length, (index) {
+          ...List.generate(displayTimes.length, (index) {
             return _buildPrayerTimeCard(
               context,
               getPrayerName(index),
-              times[index],
+              displayTimes[index],
               index,
               isDark,
+              isNext: index == nextPrayerIndex,
             );
           }),
           
@@ -105,6 +189,84 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           _buildExtendViewButton(context, isDark),
           
           const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRamadanCard(BuildContext context, String sehri, String iftar, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFf093fb), Color(0xFFf5576c)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFf093fb).withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildRamadanInfo("Sehri", sehri, Icons.wb_twilight),
+          Container(width: 1, height: 40, color: Colors.white24),
+          _buildRamadanInfo("Iftar", iftar, Icons.wb_sunny_outlined),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRamadanInfo(String title, String time, IconData icon) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 16),
+            const SizedBox(width: 8),
+            Text(title, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(time, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  Widget _buildUpcomingPrayerCard(BuildContext context, String name, String time, Duration remaining, bool isDark) {
+    String formattedRemaining = "${remaining.inHours}h ${remaining.inMinutes % 60}m";
+    if (remaining == Duration.zero) formattedRemaining = "Soon";
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1e1e2e) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: isDark ? const Color(0xFFe94560).withOpacity(0.3) : const Color(0xFF667eea).withOpacity(0.1)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Upcoming: $name", style: TextStyle(color: isDark ? Colors.white70 : Colors.black54, fontSize: 14)),
+              const SizedBox(height: 4),
+              Text(time, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 24, fontWeight: FontWeight.bold)),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const Text("Time Left", style: TextStyle(color: Colors.grey, fontSize: 12)),
+              const SizedBox(height: 4),
+              Text(formattedRemaining, style: TextStyle(color: isDark ? const Color(0xFFe94560) : const Color(0xFF667eea), fontSize: 18, fontWeight: FontWeight.bold)),
+            ],
+          )
         ],
       ),
     );
@@ -206,7 +368,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
   }
   
-  Widget _buildPrayerTimeCard(BuildContext context, String prayerName, String time, int index, bool isDark) {
+  Widget _buildPrayerTimeCard(BuildContext context, String prayerName, String time, int index, bool isDark, {bool isNext = false}) {
     final colors = [
       [const Color(0xFFf093fb), const Color(0xFFf5576c)], // Pink to Red
       [const Color(0xFFffa751), const Color(0xFFffe259)], // Orange to Yellow
@@ -214,6 +376,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       [const Color(0xFFfa709a), const Color(0xFFfee140)], // Pink to Yellow
       [const Color(0xFF30cfd0), const Color(0xFF330867)], // Cyan to Purple
       [const Color(0xFFa8edea), const Color(0xFF6a11cb)], // Light Blue to Purple
+      [const Color(0xFFf093fb), const Color(0xFFf5576c)], // Pink to Red (Reuse)
     ];
     
     final darkColors = [
@@ -223,6 +386,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       [const Color(0xFFcc2b5e), const Color(0xFF753a88)], // Deep Pink
       [const Color(0xFF11998e), const Color(0xFF38ef7d)], // Deep Teal
       [const Color(0xFF4776e6), const Color(0xFF8e54e9)], // Deep Blue Purple
+      [const Color(0xFFeb3349), const Color(0xFFf45c43)], // Deep Red (Reuse)
     ];
     
     final gradientColors = isDark ? darkColors[index % darkColors.length] : colors[index % colors.length];
@@ -244,10 +408,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   colors: gradientColors,
                 ),
                 borderRadius: BorderRadius.circular(20),
+                border: isNext ? Border.all(color: Colors.white, width: 2) : null,
                 boxShadow: [
                   BoxShadow(
                     color: gradientColors[0].withOpacity(0.4),
-                    blurRadius: 12,
+                    blurRadius: isNext ? 20 : 12,
                     offset: const Offset(0, 6),
                   ),
                 ],

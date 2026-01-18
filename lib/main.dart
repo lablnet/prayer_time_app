@@ -6,6 +6,9 @@ import 'package:prayer_time_app/pages/About.dart';
 import 'package:prayer_time_app/pages/Home.dart';
 import 'package:prayer_time_app/pages/Settings.dart';
 import 'package:prayer_time_app/theme.dart';
+import 'package:prayer_time_app/MainNavigation.dart';
+import 'package:prayer_time_app/services/notification_service.dart';
+import 'package:prayer_time_app/services/widget_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -16,16 +19,32 @@ Future<void> main() async {
 
   try {
     WidgetsFlutterBinding.ensureInitialized();
+    
+    // Initialize notification service
+    await NotificationService().init();
+    
     SharedPreferences prefs = await SharedPreferences.getInstance();
     theme = prefs.getBool('theme') ?? false;
     latitude = prefs.getDouble("latitude") ?? null;
     longitude = prefs.getDouble("longitude") ?? null;
     method = prefs.getInt("method") ?? 1;
   
+    // Listens for notification flag
+    bool notificationsEnabled = prefs.getBool("notifications_enabled") ?? true;
+  
+    // Schedule notifications if location exists
+    if (latitude != null && longitude != null) {
+      if (notificationsEnabled) {
+        await NotificationService().schedulePrayerNotifications(latitude, longitude, method);
+      } else {
+        await NotificationService().cancelAllNotifications();
+      }
+      await WidgetService.updateWidget(latitude, longitude, method);
+    }
+
     // get the system theme.
     var brightness = PlatformDispatcher.instance.platformBrightness;
     theme = brightness == Brightness.dark;
-
 
   } catch (_) {}
 
@@ -57,14 +76,14 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Prayers Time",
-      home: Home(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
+      home: MainNavigation(latitude: widget.latitude, longitude: widget.longitude, method: widget.method),
       theme: lightTheme(),
       darkTheme: darkTheme(),
       themeMode: currentTheme.currentTheme(theme: widget.theme),
       routes: {
-        'home': (context) => Home(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
-        'extend': (context) => Monthly(latitude: widget.latitude!,longitude: widget.longitude!, method: widget.method,),
-        'settings': (context) => Settings(latitude: widget.latitude,longitude: widget.longitude, method: widget.method,),
+        'home': (context) => MainNavigation(latitude: widget.latitude, longitude: widget.longitude, method: widget.method),
+        'extend': (context) => Monthly(latitude: widget.latitude!, longitude: widget.longitude!, method: widget.method),
+        'settings': (context) => Settings(latitude: widget.latitude, longitude: widget.longitude, method: widget.method),
         'about': (context) => About(),
       },
       debugShowCheckedModeBanner: false,

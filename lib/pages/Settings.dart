@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:prayer_time_app/components/custom_app_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:prayer_time_app/services/notification_service.dart';
 import 'Home.dart';
 
 class Settings extends StatefulWidget {
@@ -15,6 +16,41 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  bool _notificationsEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotificationSettings();
+  }
+
+  _loadNotificationSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _notificationsEnabled = prefs.getBool("notifications_enabled") ?? true;
+    });
+  }
+
+  _toggleNotifications(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool("notifications_enabled", value);
+    setState(() {
+      _notificationsEnabled = value;
+    });
+    
+    // Immediate action
+    if (value) {
+      if (widget.latitude != null && widget.longitude != null && widget.method != null) {
+        await NotificationService().schedulePrayerNotifications(
+          widget.latitude!, 
+          widget.longitude!, 
+          widget.method!
+        );
+      }
+    } else {
+      await NotificationService().cancelAllNotifications();
+    }
+  }
 
 
   NavigationsRoute(BuildContext context, var item) async {
@@ -144,8 +180,53 @@ class _SettingsState extends State<Settings> {
                 () => NavigationsRoute(context, index),
               );
             }),
+
+            const SizedBox(height: 32),
+            
+            // Notification Setting
+            _buildNotificationCard(isDark),
+            const SizedBox(height: 32),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationCard(bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1e1e2e) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: SwitchListTile(
+        title: Text(
+          "Prayer Notifications",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+        ),
+        subtitle: Text(
+          "Get notified when it's time for prayer",
+          style: TextStyle(
+            color: isDark ? Colors.white60 : Colors.black54,
+            fontSize: 12,
+          ),
+        ),
+        value: _notificationsEnabled,
+        onChanged: _toggleNotifications,
+        secondary: Icon(
+          _notificationsEnabled ? Icons.notifications_active : Icons.notifications_off,
+          color: _notificationsEnabled ? (isDark ? const Color(0xFFe94560) : const Color(0xFF667eea)) : Colors.grey,
+        ),
+        activeColor: isDark ? const Color(0xFFe94560) : const Color(0xFF667eea),
       ),
     );
   }
