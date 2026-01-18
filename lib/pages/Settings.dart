@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Home.dart';
 
 class Settings extends StatefulWidget {
-  double? latitude;
-  double? longitude;
-  int? method;
+  final double? latitude;
+  final double? longitude;
+  final int? method;
   Settings({this.latitude, this.longitude, this.method});
 
 
@@ -41,7 +41,6 @@ class _SettingsState extends State<Settings> {
       'Institute of Geophysics, University of Tehran'
     ];
     List<Widget> items = [];
-    int i = 0;
     for (int i = 0; i < methods.length; i++) {
       items.add(
         ListTile(

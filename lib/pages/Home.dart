@@ -10,7 +10,7 @@ import 'Monthly.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Home extends StatefulWidget {
-  Map methods = {
+  static const Map methodsMap = {
     0: 'Jafari',
     1: 'University of Islamic Sciences, Karachi',
     2: 'Islamic Society of North America (ISNA)',
@@ -20,9 +20,9 @@ class Home extends StatefulWidget {
     6: "Custom",
     7: 'Institute of Geophysics, University of Tehran'
   };
-  double? latitude;
-  double? longitude;
-  int? method;
+  final double? latitude;
+  final double? longitude;
+  final int? method;
   Home({this.latitude, this.longitude, this.method});
   @override
   _HomeState createState() => _HomeState();
@@ -30,10 +30,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  double? _latitude;
+  double? _longitude;
 
   @override
   void initState() {
     super.initState();
+    _latitude = widget.latitude;
+    _longitude = widget.longitude;
     _controller = AnimationController(vsync: this);
   }
 
@@ -54,7 +58,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       "year": now.year,
       "mon": now.month,
       "mday": now.day,
-    }, widget.latitude!, widget.longitude!,
+    }, _latitude!, _longitude!,
         parseTimeZoneOffset(now.timeZoneOffset));
     // remove 6th index from the list, because it is not required.
     times.removeAt(5);
@@ -70,7 +74,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   style: TextStyle(fontSize: 16),
                 ),
                 Text(
-                  widget.methods[widget.method],
+                  Home.methodsMap[widget.method] ?? "Unknown",
                   style: TextStyle(fontSize: 13),
                 ),
               ],
@@ -112,8 +116,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   context,
                   MaterialPageRoute(
                       builder: (context) => Monthly(
-                          latitude: widget.latitude!,
-                          longitude: widget.longitude!,
+                          latitude: _latitude!,
+                          longitude: _longitude!,
                           method: widget.method!)))
             },
           )
@@ -125,7 +129,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     Widget? body = null;
-    if (widget.latitude == null) {
+    if (_latitude == null) {
       body = Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -164,10 +168,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     PermissionStatus status = await Permission.location.request();
     if (status.isGranted) {
       Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
       setState(() {
-        widget.latitude = position.latitude;
-        widget.longitude = position.longitude;
+        _latitude = position.latitude;
+        _longitude = position.longitude;
       });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setDouble("latitude", position.latitude);

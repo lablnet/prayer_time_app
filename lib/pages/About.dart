@@ -27,8 +27,8 @@ class About extends StatelessWidget {
             ListTile(
               title: Text("Special Thanks"),
               subtitle: Text("http://praytimes.org/"),
-              onLongPress: () async => {
-                await openUrl("http://praytimes.org/")
+              onLongPress: () async {
+                await openUrl("http://praytimes.org/");
               },
             ),
             ListHeader(title: "Flutter"),

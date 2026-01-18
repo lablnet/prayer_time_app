@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:flutter/scheduler.dart";
+import "dart:ui";
 import 'package:prayer_time_app/pages/Monthly.dart';
 import 'package:prayer_time_app/config.dart';
 import 'package:prayer_time_app/pages/About.dart';
@@ -23,7 +23,7 @@ Future<void> main() async {
     method = prefs.getInt("method") ?? 1;
   
     // get the system theme.
-    var brightness = WidgetsBinding.instance.window.platformBrightness;
+    var brightness = PlatformDispatcher.instance.platformBrightness;
     theme = brightness == Brightness.dark;
 
 

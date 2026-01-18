@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:prayer_time_app/class/PrayerTimes.dart';
 import 'package:prayer_time_app/components/custom_app_bar.dart';
-import 'package:prayer_time/prayer_time.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:intl/intl.dart';
 
