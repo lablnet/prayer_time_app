@@ -2,15 +2,16 @@ import "package:flutter/material.dart";
 import 'package:prayer_time_app/config.dart';
 import '../utils.dart';
 
-AppBar customAppBar(BuildContext context, String title, {bool back = true}) {
+AppBar customAppBar(BuildContext context, String title, {bool back = true, List<Widget>? actions}) {
   return AppBar(
     title: Text(title),
     elevation: 1,
     centerTitle: false,
     automaticallyImplyLeading: back,
     actions: <Widget>[
+      if (actions != null) ...actions,
       IconButton(
-        icon: Icon(Icons.wb_sunny),
+        icon: const Icon(Icons.wb_sunny),
         onPressed: () => {
           currentTheme.switchTheme(),
         },

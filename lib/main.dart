@@ -9,6 +9,8 @@ import 'package:prayer_time_app/theme.dart';
 import 'package:prayer_time_app/MainNavigation.dart';
 import 'package:prayer_time_app/services/notification_service.dart';
 import 'package:prayer_time_app/services/widget_service.dart';
+import 'package:prayer_time_app/services/tasbih_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -84,19 +86,24 @@ class _PrayerTimeAppState extends State<PrayerTimeApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Prayers Time",
-      home: MainNavigation(latitude: widget.latitude, longitude: widget.longitude, method: widget.method),
-      theme: lightTheme(),
-      darkTheme: darkTheme(),
-      themeMode: currentTheme.currentTheme(theme: widget.theme),
-      routes: {
-        'home': (context) => MainNavigation(latitude: widget.latitude, longitude: widget.longitude, method: widget.method),
-        'extend': (context) => Monthly(latitude: widget.latitude!, longitude: widget.longitude!, method: widget.method),
-        'settings': (context) => Settings(latitude: widget.latitude, longitude: widget.longitude, method: widget.method),
-        'about': (context) => About(),
-      },
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TasbihProvider()),
+      ],
+      child: MaterialApp(
+        title: "Prayers Time",
+        home: MainNavigation(latitude: widget.latitude, longitude: widget.longitude, method: widget.method),
+        theme: lightTheme(),
+        darkTheme: darkTheme(),
+        themeMode: currentTheme.currentTheme(theme: widget.theme),
+        routes: {
+          'home': (context) => MainNavigation(latitude: widget.latitude, longitude: widget.longitude, method: widget.method),
+          'extend': (context) => Monthly(latitude: widget.latitude!, longitude: widget.longitude!, method: widget.method),
+          'settings': (context) => Settings(latitude: widget.latitude, longitude: widget.longitude, method: widget.method),
+          'about': (context) => About(),
+        },
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
