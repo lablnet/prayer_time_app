@@ -11,3 +11,5 @@
 -dontwarn com.google.android.gms.**
 -keep class com.google.common.** { *; }
 -dontwarn com.google.common.**
+-dontwarn com.google.android.play.core.**
+-dontwarn io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager
