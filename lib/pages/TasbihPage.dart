@@ -1,42 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:prayer_time_app/pages/TasbihFullScreenPage.dart';
+import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
 import 'package:prayer_time_app/components/custom_app_bar.dart';
+import 'package:prayer_time_app/services/tasbih_provider.dart';
 
-class TasbihPage extends StatefulWidget {
-  @override
-  _TasbihPageState createState() => _TasbihPageState();
-}
-
-class _TasbihPageState extends State<TasbihPage> {
-  int _counter = 0;
-  int _goal = 33;
-
-  void _incrementCounter() async {
-    setState(() {
-      _counter++;
-    });
-    if (await Vibration.hasVibrator() ?? false) {
-      Vibration.vibrate(duration: 50);
-    }
-    if (_counter % _goal == 0) {
-       if (await Vibration.hasVibrator() ?? false) {
-        Vibration.vibrate(pattern: [0, 200, 100, 200]);
-      }
-    }
-  }
-
-  void _resetCounter() {
-    setState(() {
-      _counter = 0;
-    });
-  }
-
+class TasbihPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tasbih = Provider.of<TasbihProvider>(context);
     
     return Scaffold(
-      appBar: customAppBar(context, "Digital Tasbih", back: false),
+      appBar: customAppBar(
+        context, 
+        "Digital Tasbih", 
+        back: false,
+      ),
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -52,7 +32,7 @@ class _TasbihPageState extends State<TasbihPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Goal: $_goal",
+              "Goal: ${tasbih.goal}",
               style: TextStyle(
                 fontSize: 18,
                 color: isDark ? Colors.white70 : Colors.black54,
@@ -61,7 +41,7 @@ class _TasbihPageState extends State<TasbihPage> {
             ),
             const SizedBox(height: 20),
             GestureDetector(
-              onTap: _incrementCounter,
+              onTap: tasbih.increment,
               child: Container(
                 width: 250,
                 height: 250,
@@ -82,7 +62,7 @@ class _TasbihPageState extends State<TasbihPage> {
                 ),
                 child: Center(
                   child: Text(
-                    "$_counter",
+                    "${tasbih.counter}",
                     style: TextStyle(
                       fontSize: 80,
                       fontWeight: FontWeight.bold,
@@ -99,7 +79,7 @@ class _TasbihPageState extends State<TasbihPage> {
                 _buildActionButton(
                   icon: Icons.refresh,
                   label: "Reset",
-                  onPressed: _resetCounter,
+                  onPressed: tasbih.reset,
                   color: Colors.orange,
                 ),
                 const SizedBox(width: 30),
@@ -107,9 +87,21 @@ class _TasbihPageState extends State<TasbihPage> {
                   icon: Icons.settings,
                   label: "Set Goal",
                   onPressed: () {
-                    _showGoalDialog();
+                    _showGoalDialog(context, tasbih);
                   },
                   color: Colors.blue,
+                ),
+                const SizedBox(width: 30),
+                _buildActionButton(
+                  icon: Icons.fullscreen_rounded,
+                  label: "Fullscreen",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const TasbihFullScreenPage()),
+                    );
+                  },
+                  color: Colors.teal,
                 ),
               ],
             ),
@@ -136,27 +128,29 @@ class _TasbihPageState extends State<TasbihPage> {
     );
   }
 
-  void _showGoalDialog() {
+  void _showGoalDialog(BuildContext context, TasbihProvider tasbih) {
+    int tempGoal = tasbih.goal;
+    final controller = TextEditingController(text: tasbih.goal.toString());
+    
     showDialog(
       context: context,
       builder: (context) {
-        int tempGoal = _goal;
         return AlertDialog(
           title: const Text("Set Tasbih Goal"),
           content: TextField(
+            controller: controller,
             keyboardType: TextInputType.number,
+            autofocus: true,
             decoration: const InputDecoration(hintText: "Enter goal (e.g., 33, 100)"),
             onChanged: (value) {
-              tempGoal = int.tryParse(value) ?? _goal;
+              tempGoal = int.tryParse(value) ?? tasbih.goal;
             },
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
             TextButton(
               onPressed: () {
-                setState(() {
-                  _goal = tempGoal;
-                });
+                tasbih.setGoal(tempGoal);
                 Navigator.pop(context);
               },
               child: const Text("Set"),
