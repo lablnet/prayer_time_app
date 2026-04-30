@@ -1,8 +1,10 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:prayer_time/prayer_time.dart';
 import 'package:prayer_time_app/utils.dart';
+import 'package:prayer_time_app/models/tasbih_item.dart';
 
 class NotificationService {
   static final NotificationService _notificationService = NotificationService._internal();
@@ -37,12 +39,25 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
 
+    // Request exact alarms permission for Android 14+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestExactAlarmsPermission();
+
     tz.initializeTimeZones();
+    try {
+      final timeZoneInfo = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(timeZoneInfo.identifier));
+    } catch (e) {
+      print('Could not set local timezone: $e');
+    }
   }
 
   Future<void> schedulePrayerNotifications(double latitude, double longitude, int method) async {
-    // Cancel all previous notifications
-    await flutterLocalNotificationsPlugin.cancelAll();
+    // Cancel all previous prayer notifications (IDs 0 to 66)
+    for (int i = 0; i <= 70; i++) {
+      await flutterLocalNotificationsPlugin.cancel(i);
+    }
 
     DateTime now = DateTime.now();
     PrayTime prayerTime = PrayTime(method: method);
@@ -98,6 +113,54 @@ class NotificationService {
 
   Future<void> cancelAllNotifications() async {
     await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
+  Future<void> scheduleTasbihReminders(List<TasbihItem> tasbihs) async {
+    // Cancel old tasbih notifications (we use IDs 1000 to 1100 for simplicity)
+    for (int i = 1000; i < 1100; i++) {
+      await flutterLocalNotificationsPlugin.cancel(i);
+    }
+
+    int baseId = 1000;
+    for (var tasbih in tasbihs) {
+      if (!tasbih.reminderEnabled || tasbih.targetType == TargetType.none || tasbih.goal <= 0) {
+        continue;
+      }
+
+      // Check if goal met
+      if (tasbih.counter >= tasbih.goal) {
+        // Goal met, no reminder needed today. But we should schedule for tomorrow if it's daily.
+        // For simplicity, we just schedule it every day at 8 PM, and when they open the app/increment, this function runs again and cancels if goal is met.
+      }
+
+      DateTime now = DateTime.now();
+      DateTime scheduledDate = DateTime(now.year, now.month, now.day, 20, 0); // 8:00 PM
+      
+      if (now.isAfter(scheduledDate) || tasbih.counter >= tasbih.goal) {
+        // Schedule for tomorrow if missed today or if goal already met today
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        baseId++,
+        'Tasbih Reminder: ${tasbih.name}',
+        "Don't forget your daily tasbih target of ${tasbih.goal}!",
+        tz.TZDateTime.from(scheduledDate, tz.local),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'tasbih_channel',
+            'Tasbih Reminders',
+            channelDescription: 'Notifications for daily tasbih goals',
+            importance: Importance.high,
+            priority: Priority.high,
+          ),
+          iOS: DarwinNotificationDetails(),
+        ),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time, // Repeat daily at this time
+      );
+    }
   }
 
   Map<String, int>? _parseTime(String timeStr) {

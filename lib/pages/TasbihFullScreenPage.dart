@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:prayer_time_app/services/tasbih_provider.dart';
+import 'package:prayer_time_app/models/tasbih_item.dart';
 
 class TasbihFullScreenPage extends StatelessWidget {
-  const TasbihFullScreenPage({super.key});
+  final String tasbihId;
+
+  const TasbihFullScreenPage({super.key, required this.tasbihId});
 
   @override
   Widget build(BuildContext context) {
-    final tasbih = Provider.of<TasbihProvider>(context);
+    final provider = Provider.of<TasbihProvider>(context);
+    final tasbih = provider.getTasbih(tasbihId);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (tasbih == null) {
+      return const Scaffold(body: Center(child: Text("Tasbih not found")));
+    }
 
     return Scaffold(
       body: Container(
@@ -48,12 +56,12 @@ class TasbihFullScreenPage extends StatelessWidget {
                     const Spacer(),
                     IconButton(
                       icon: const Icon(Icons.settings_outlined, size: 24),
-                      onPressed: () => _showGoalDialog(context, tasbih),
+                      onPressed: () => _showGoalDialog(context, provider, tasbih),
                       tooltip: "Set Goal",
                     ),
                     IconButton(
                       icon: const Icon(Icons.refresh_rounded, size: 24),
-                      onPressed: tasbih.reset,
+                      onPressed: () => _showResetDialog(context, provider, tasbih),
                       tooltip: "Reset Counter",
                     ),
                   ],
@@ -63,7 +71,7 @@ class TasbihFullScreenPage extends StatelessWidget {
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: tasbih.increment,
+                  onTap: () => provider.increment(tasbih.id),
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -105,7 +113,33 @@ class TasbihFullScreenPage extends StatelessWidget {
     );
   }
 
-  void _showGoalDialog(BuildContext context, TasbihProvider tasbih) {
+  void _showResetDialog(BuildContext context, TasbihProvider provider, TasbihItem tasbih) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Reset Tasbih?"),
+          content: const Text("Are you sure you want to reset this tasbih counter? This cannot be undone."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                provider.reset(tasbih.id);
+                Navigator.pop(context);
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text("Reset"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showGoalDialog(BuildContext context, TasbihProvider provider, TasbihItem tasbih) {
     int tempGoal = tasbih.goal;
     final controller = TextEditingController(text: tasbih.goal.toString());
     
@@ -127,7 +161,7 @@ class TasbihFullScreenPage extends StatelessWidget {
             TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
             TextButton(
               onPressed: () {
-                tasbih.setGoal(tempGoal);
+                provider.updateTasbih(tasbih.id, tasbih.name, tempGoal, tasbih.targetType);
                 Navigator.pop(context);
               },
               child: const Text("Set"),

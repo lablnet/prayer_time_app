@@ -1,14 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
+import 'package:prayer_time_app/models/tasbih_item.dart';
+import 'package:prayer_time_app/services/notification_service.dart';
 
 class TasbihProvider with ChangeNotifier {
-  int _counter = 0;
-  int _goal = 33;
-  bool _notificationsEnabled = true;
+  List<TasbihItem> _tasbihs = [];
 
-  int get counter => _counter;
-  int get goal => _goal;
+  List<TasbihItem> get tasbihs => _tasbihs;
 
   TasbihProvider() {
     _loadFromPrefs();
@@ -16,42 +16,104 @@ class TasbihProvider with ChangeNotifier {
 
   Future<void> _loadFromPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _counter = prefs.getInt('tasbih_counter') ?? 0;
-    _goal = prefs.getInt('tasbih_goal') ?? 33;
+    
+    // Check if there is old data to migrate
+    int? oldCounter = prefs.getInt('tasbih_counter');
+    int? oldGoal = prefs.getInt('tasbih_goal');
+    
+    List<String>? tasbihsList = prefs.getStringList('tasbih_list');
+    
+    if (tasbihsList != null) {
+      _tasbihs = tasbihsList.map((item) => TasbihItem.fromJson(item)).toList();
+    } else if (oldCounter != null || oldGoal != null) {
+      // Migrate old data
+      _tasbihs.add(
+        TasbihItem(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: 'General Tasbih',
+          counter: oldCounter ?? 0,
+          goal: oldGoal ?? 33,
+        ),
+      );
+      // Remove old data keys so migration happens only once
+      await prefs.remove('tasbih_counter');
+      await prefs.remove('tasbih_goal');
+      _saveToPrefs();
+    }
+
     notifyListeners();
   }
 
   Future<void> _saveToPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('tasbih_counter', _counter);
-    await prefs.setInt('tasbih_goal', _goal);
+    List<String> tasbihsList = _tasbihs.map((item) => item.toJson()).toList();
+    await prefs.setStringList('tasbih_list', tasbihsList);
+    NotificationService().scheduleTasbihReminders(_tasbihs);
   }
 
-  void increment() async {
-    _counter++;
+  void addTasbih(String name, int goal, TargetType targetType) {
+    _tasbihs.add(
+      TasbihItem(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: name,
+        goal: goal,
+        targetType: targetType,
+      ),
+    );
     notifyListeners();
     _saveToPrefs();
+  }
 
-    if (await Vibration.hasVibrator() ?? false) {
-      Vibration.vibrate(duration: 50);
+  void updateTasbih(String id, String name, int goal, TargetType targetType) {
+    int index = _tasbihs.indexWhere((item) => item.id == id);
+    if (index != -1) {
+      _tasbihs[index].name = name;
+      _tasbihs[index].goal = goal;
+      _tasbihs[index].targetType = targetType;
+      notifyListeners();
+      _saveToPrefs();
     }
-    
-    if (_counter % _goal == 0) {
+  }
+
+  void deleteTasbih(String id) {
+    _tasbihs.removeWhere((item) => item.id == id);
+    notifyListeners();
+    _saveToPrefs();
+  }
+
+  TasbihItem? getTasbih(String id) {
+    try {
+      return _tasbihs.firstWhere((item) => item.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  void increment(String id) async {
+    int index = _tasbihs.indexWhere((item) => item.id == id);
+    if (index != -1) {
+      _tasbihs[index].counter++;
+      _tasbihs[index].lastUpdated = DateTime.now();
+      notifyListeners();
+      _saveToPrefs();
+
       if (await Vibration.hasVibrator() ?? false) {
-        Vibration.vibrate(pattern: [0, 200, 100, 200]);
+        Vibration.vibrate(duration: 50);
+      }
+      
+      if (_tasbihs[index].counter > 0 && _tasbihs[index].counter % _tasbihs[index].goal == 0) {
+        if (await Vibration.hasVibrator() ?? false) {
+          Vibration.vibrate(pattern: [0, 200, 100, 200]);
+        }
       }
     }
   }
 
-  void reset() {
-    _counter = 0;
-    notifyListeners();
-    _saveToPrefs();
-  }
-
-  void setGoal(int newGoal) {
-    if (newGoal > 0) {
-      _goal = newGoal;
+  void reset(String id) {
+    int index = _tasbihs.indexWhere((item) => item.id == id);
+    if (index != -1) {
+      _tasbihs[index].counter = 0;
+      _tasbihs[index].lastUpdated = DateTime.now();
       notifyListeners();
       _saveToPrefs();
     }
