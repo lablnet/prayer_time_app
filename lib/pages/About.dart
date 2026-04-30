@@ -67,7 +67,7 @@ class About extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "Version 1.0.2",
+                    "Version 3.0.0",
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -111,7 +111,7 @@ class About extends StatelessWidget {
             _buildInfoCard(
               icon: Icons.flutter_dash,
               title: "Flutter Version",
-              subtitle: "3.22.2",
+              subtitle: "3.41.8",
               isDark: isDark,
             ),
             _buildInfoCard(
@@ -123,7 +123,7 @@ class About extends StatelessWidget {
             _buildInfoCard(
               icon: Icons.code,
               title: "Dart SDK Version",
-              subtitle: "3.4.1",
+              subtitle: "3.11.5",
               isDark: isDark,
             ),
             
