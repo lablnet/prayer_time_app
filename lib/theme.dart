@@ -42,7 +42,13 @@ ThemeData lightTheme() {
       elevation: 0,
       centerTitle: true,
       backgroundColor: Colors.transparent,
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarDividerColor: Colors.transparent,
+      ),
       iconTheme: IconThemeData(color: AppColors.textPrimaryLight),
       titleTextStyle: TextStyle(
         color: AppColors.textPrimaryLight,
@@ -147,7 +153,13 @@ ThemeData darkTheme() {
       elevation: 0,
       centerTitle: true,
       backgroundColor: Colors.transparent,
-      systemOverlayStyle: SystemUiOverlayStyle.light,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarDividerColor: Colors.transparent,
+      ),
       iconTheme: IconThemeData(color: AppColors.textPrimaryDark),
       titleTextStyle: TextStyle(
         color: AppColors.textPrimaryDark,

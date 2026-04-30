@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "dart:ui";
 import 'package:prayer_time_app/pages/Monthly.dart';
 import 'package:prayer_time_app/config.dart';
@@ -21,6 +22,18 @@ Future<void> main() async {
 
   try {
     WidgetsFlutterBinding.ensureInitialized();
+    
+    // Enable edge-to-edge display
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    
+    // Set system overlay style to transparent for Android 15+ compatibility
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark, // Default, will be overridden by theme
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
     
     // Initialize notification service
     await NotificationService().init();
