@@ -67,7 +67,7 @@ class About extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "Version 3.0.1",
+                    "Version 3.0.2",
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
