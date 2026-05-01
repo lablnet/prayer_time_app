@@ -9,8 +9,10 @@ class TasbihItem {
   int goal;
   TargetType targetType;
   int totalCount;
+  Map<String, int> dailyHistory;
   DateTime lastUpdated;
   bool reminderEnabled;
+  bool vibrationEnabled;
 
   TasbihItem({
     required this.id,
@@ -19,9 +21,12 @@ class TasbihItem {
     this.goal = 33,
     this.targetType = TargetType.none,
     this.totalCount = 0,
+    Map<String, int>? dailyHistory,
     DateTime? lastUpdated,
     this.reminderEnabled = true,
-  }) : lastUpdated = lastUpdated ?? DateTime.now();
+    this.vibrationEnabled = true,
+  })  : dailyHistory = dailyHistory ?? {},
+        lastUpdated = lastUpdated ?? DateTime.now();
 
   Map<String, dynamic> toMap() {
     return {
@@ -29,10 +34,12 @@ class TasbihItem {
       'name': name,
       'counter': counter,
       'totalCount': totalCount,
+      'dailyHistory': dailyHistory,
       'goal': goal,
       'targetType': targetType.index,
       'lastUpdated': lastUpdated.toIso8601String(),
       'reminderEnabled': reminderEnabled,
+      'vibrationEnabled': vibrationEnabled,
     };
   }
 
@@ -42,12 +49,14 @@ class TasbihItem {
       name: map['name'] ?? '',
       counter: map['counter']?.toInt() ?? 0,
       totalCount: map['totalCount']?.toInt() ?? 0,
+      dailyHistory: Map<String, int>.from(map['dailyHistory'] ?? {}),
       goal: map['goal']?.toInt() ?? 33,
       targetType: TargetType.values[map['targetType'] ?? TargetType.none.index],
       lastUpdated: map['lastUpdated'] != null
           ? DateTime.parse(map['lastUpdated'])
           : DateTime.now(),
       reminderEnabled: map['reminderEnabled'] ?? true,
+      vibrationEnabled: map['vibrationEnabled'] ?? true,
     );
   }
 

@@ -86,7 +86,9 @@ class TasbihDetailPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 80,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF2d3436),
+                      color: tasbih.counter >= tasbih.goal 
+                          ? Colors.green 
+                          : (isDark ? Colors.white : const Color(0xFF2d3436)),
                     ),
                   ),
                 ),
@@ -125,11 +127,61 @@ class TasbihDetailPage extends StatelessWidget {
                   },
                   color: Colors.teal,
                 ),
+                const SizedBox(width: 30),
+                _buildActionButton(
+                  icon: tasbih.vibrationEnabled ? Icons.vibration : Icons.phonelink_erase,
+                  label: tasbih.vibrationEnabled ? "Vibrate On" : "Vibrate Off",
+                  onPressed: () {
+                    provider.toggleVibration(tasbih.id);
+                  },
+                  color: tasbih.vibrationEnabled ? Colors.indigo : Colors.grey,
+                ),
               ],
             ),
+            const SizedBox(height: 30),
+            if (tasbih.dailyHistory.isNotEmpty)
+              _buildHistoryButton(context, tasbih),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHistoryButton(BuildContext context, TasbihItem tasbih) {
+    return TextButton.icon(
+      onPressed: () => _showHistoryDialog(context, tasbih),
+      icon: const Icon(Icons.history_rounded),
+      label: const Text("View Daily History"),
+      style: TextButton.styleFrom(foregroundColor: Colors.white70),
+    );
+  }
+
+  void _showHistoryDialog(BuildContext context, TasbihItem tasbih) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("${tasbih.name} History"),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: tasbih.dailyHistory.length,
+              itemBuilder: (context, index) {
+                String dateKey = tasbih.dailyHistory.keys.elementAt(index);
+                int count = tasbih.dailyHistory[dateKey]!;
+                return ListTile(
+                  title: Text(dateKey),
+                  trailing: Text(count.toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Close")),
+          ],
+        );
+      },
     );
   }
 

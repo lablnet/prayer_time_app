@@ -97,14 +97,17 @@ class TasbihProvider with ChangeNotifier {
       _tasbihs[index].lastUpdated = DateTime.now();
       notifyListeners();
       _saveToPrefs();
-
-      if (await Vibration.hasVibrator()) {
-        Vibration.vibrate(duration: 50);
-      }
       
-      if (_tasbihs[index].counter > 0 && _tasbihs[index].counter % _tasbihs[index].goal == 0) {
-        if (await Vibration.hasVibrator()) {
-          Vibration.vibrate(pattern: [0, 200, 100, 200]);
+      final tasbih = _tasbihs[index];
+      if (tasbih.vibrationEnabled) {
+        if (await Vibration.hasVibrator() ?? false) {
+          Vibration.vibrate(duration: 50);
+        }
+        
+        if (tasbih.counter > 0 && tasbih.counter % tasbih.goal == 0) {
+          if (await Vibration.hasVibrator() ?? false) {
+            Vibration.vibrate(pattern: [0, 200, 100, 200]);
+          }
         }
       }
     }
@@ -115,6 +118,15 @@ class TasbihProvider with ChangeNotifier {
     if (index != -1) {
       _tasbihs[index].counter = 0;
       _tasbihs[index].lastUpdated = DateTime.now();
+      notifyListeners();
+      _saveToPrefs();
+    }
+  }
+
+  void toggleVibration(String id) {
+    int index = _tasbihs.indexWhere((item) => item.id == id);
+    if (index != -1) {
+      _tasbihs[index].vibrationEnabled = !_tasbihs[index].vibrationEnabled;
       notifyListeners();
       _saveToPrefs();
     }
@@ -143,6 +155,10 @@ class TasbihProvider with ChangeNotifier {
       }
 
       if (shouldReset) {
+        // Store in history before resetting
+        String dateKey = "${tasbih.lastUpdated.year}-${tasbih.lastUpdated.month}-${tasbih.lastUpdated.day}";
+        tasbih.dailyHistory[dateKey] = (tasbih.dailyHistory[dateKey] ?? 0) + tasbih.counter;
+        
         tasbih.counter = 0;
         tasbih.lastUpdated = now;
         changed = true;

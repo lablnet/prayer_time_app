@@ -88,21 +88,23 @@ class TasbihFullScreenPage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "${tasbih.counter}",
-                          style: TextStyle(
-                            fontSize: 120,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : const Color(0xFF2d3436),
-                            shadows: [
-                              Shadow(
-                                color: (isDark ? Colors.black : Colors.black12).withOpacity(0.3),
-                                blurRadius: 20,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
+                          Text(
+                            "${tasbih.counter}",
+                            style: TextStyle(
+                              fontSize: 120,
+                              fontWeight: FontWeight.bold,
+                              color: tasbih.counter >= tasbih.goal 
+                                  ? Colors.green 
+                                  : (isDark ? Colors.white : const Color(0xFF2d3436)),
+                              shadows: [
+                                Shadow(
+                                  color: (isDark ? Colors.black : Colors.black12).withOpacity(0.3),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
                         const SizedBox(height: 10),
                         Text(
                           "TAP ANYWHERE",

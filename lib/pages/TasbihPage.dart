@@ -144,7 +144,9 @@ class TasbihPage extends StatelessWidget {
                   minHeight: 8,
                   backgroundColor: isDark ? Colors.white12 : Colors.black12,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    isDark ? const Color(0xFFe94560) : const Color(0xFF667eea),
+                    tasbih.counter >= tasbih.goal 
+                        ? Colors.green 
+                        : (isDark ? const Color(0xFFe94560) : const Color(0xFF667eea)),
                   ),
                 ),
               ),
@@ -165,6 +167,7 @@ class TasbihPage extends StatelessWidget {
     final nameController = TextEditingController(text: tasbih?.name ?? '');
     final goalController = TextEditingController(text: tasbih?.goal.toString() ?? '33');
     TargetType selectedTargetType = tasbih?.targetType ?? TargetType.none;
+    bool vibrationEnabled = tasbih?.vibrationEnabled ?? true;
 
     showDialog(
       context: context,
@@ -190,7 +193,7 @@ class TasbihPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<TargetType>(
-                      initialValue: selectedTargetType,
+                      value: selectedTargetType,
                       decoration: const InputDecoration(labelText: "Target Type"),
                       items: const [
                         DropdownMenuItem(value: TargetType.none, child: Text("None")),
@@ -201,6 +204,14 @@ class TasbihPage extends StatelessWidget {
                         if (value != null) {
                           setState(() => selectedTargetType = value);
                         }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    SwitchListTile(
+                      title: const Text("Vibration"),
+                      value: vibrationEnabled,
+                      onChanged: (value) {
+                        setState(() => vibrationEnabled = value);
                       },
                     ),
                   ],
@@ -219,8 +230,15 @@ class TasbihPage extends StatelessWidget {
 
                     if (tasbih == null) {
                       provider.addTasbih(name, goal, selectedTargetType);
+                      final newTasbih = provider.tasbihs.last;
+                      if (!vibrationEnabled) {
+                        provider.toggleVibration(newTasbih.id);
+                      }
                     } else {
                       provider.updateTasbih(tasbih.id, name, goal, selectedTargetType);
+                      if (tasbih.vibrationEnabled != vibrationEnabled) {
+                        provider.toggleVibration(tasbih.id);
+                      }
                     }
                     Navigator.pop(context);
                   },
