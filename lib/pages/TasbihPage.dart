@@ -121,6 +121,13 @@ class TasbihPage extends StatelessWidget {
                     ),
                   ),
                   Text(
+                    "Total: ${tasbih.totalCount}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDark ? Colors.white70 : Colors.black54,
+                    ),
+                  ),
+                  Text(
                     "Goal: ${tasbih.goal}",
                     style: TextStyle(
                       fontSize: 14,
@@ -183,7 +190,7 @@ class TasbihPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<TargetType>(
-                      value: selectedTargetType,
+                      initialValue: selectedTargetType,
                       decoration: const InputDecoration(labelText: "Target Type"),
                       items: const [
                         DropdownMenuItem(value: TargetType.none, child: Text("None")),

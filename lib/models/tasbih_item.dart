@@ -8,6 +8,7 @@ class TasbihItem {
   int counter;
   int goal;
   TargetType targetType;
+  int totalCount;
   DateTime lastUpdated;
   bool reminderEnabled;
 
@@ -17,6 +18,7 @@ class TasbihItem {
     this.counter = 0,
     this.goal = 33,
     this.targetType = TargetType.none,
+    this.totalCount = 0,
     DateTime? lastUpdated,
     this.reminderEnabled = true,
   }) : lastUpdated = lastUpdated ?? DateTime.now();
@@ -26,6 +28,7 @@ class TasbihItem {
       'id': id,
       'name': name,
       'counter': counter,
+      'totalCount': totalCount,
       'goal': goal,
       'targetType': targetType.index,
       'lastUpdated': lastUpdated.toIso8601String(),
@@ -38,6 +41,7 @@ class TasbihItem {
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       counter: map['counter']?.toInt() ?? 0,
+      totalCount: map['totalCount']?.toInt() ?? 0,
       goal: map['goal']?.toInt() ?? 33,
       targetType: TargetType.values[map['targetType'] ?? TargetType.none.index],
       lastUpdated: map['lastUpdated'] != null

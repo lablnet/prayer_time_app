@@ -45,13 +45,25 @@ class TasbihFullScreenPage extends StatelessWidget {
                       tooltip: "Exit Full Screen",
                     ),
                     const Spacer(),
-                    Text(
-                      "Goal: ${tasbih.goal}",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white70 : Colors.black54,
-                      ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Goal: ${tasbih.goal}",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white70 : Colors.black54,
+                          ),
+                        ),
+                        Text(
+                          "Total: ${tasbih.totalCount}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? Colors.white38 : Colors.black26,
+                          ),
+                        ),
+                      ],
                     ),
                     const Spacer(),
                     IconButton(

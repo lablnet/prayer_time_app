@@ -50,6 +50,15 @@ class TasbihDetailPage extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              "Total All-Time: ${tasbih.totalCount}",
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.white54 : Colors.black45,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
             const SizedBox(height: 20),
             GestureDetector(
               onTap: () => provider.increment(tasbih.id),

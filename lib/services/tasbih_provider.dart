@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
@@ -25,6 +24,7 @@ class TasbihProvider with ChangeNotifier {
     
     if (tasbihsList != null) {
       _tasbihs = tasbihsList.map((item) => TasbihItem.fromJson(item)).toList();
+      _checkAndResetCounters();
     } else if (oldCounter != null || oldGoal != null) {
       // Migrate old data
       _tasbihs.add(
@@ -93,16 +93,17 @@ class TasbihProvider with ChangeNotifier {
     int index = _tasbihs.indexWhere((item) => item.id == id);
     if (index != -1) {
       _tasbihs[index].counter++;
+      _tasbihs[index].totalCount++;
       _tasbihs[index].lastUpdated = DateTime.now();
       notifyListeners();
       _saveToPrefs();
 
-      if (await Vibration.hasVibrator() ?? false) {
+      if (await Vibration.hasVibrator()) {
         Vibration.vibrate(duration: 50);
       }
       
       if (_tasbihs[index].counter > 0 && _tasbihs[index].counter % _tasbihs[index].goal == 0) {
-        if (await Vibration.hasVibrator() ?? false) {
+        if (await Vibration.hasVibrator()) {
           Vibration.vibrate(pattern: [0, 200, 100, 200]);
         }
       }
@@ -114,6 +115,41 @@ class TasbihProvider with ChangeNotifier {
     if (index != -1) {
       _tasbihs[index].counter = 0;
       _tasbihs[index].lastUpdated = DateTime.now();
+      notifyListeners();
+      _saveToPrefs();
+    }
+  }
+
+  void _checkAndResetCounters() {
+    DateTime now = DateTime.now();
+    bool changed = false;
+
+    for (var tasbih in _tasbihs) {
+      if (tasbih.targetType == TargetType.none) continue;
+
+      bool shouldReset = false;
+      if (tasbih.targetType == TargetType.daily) {
+        // Check if lastUpdated was on a different day
+        if (tasbih.lastUpdated.year != now.year ||
+            tasbih.lastUpdated.month != now.month ||
+            tasbih.lastUpdated.day != now.day) {
+          shouldReset = true;
+        }
+      } else if (tasbih.targetType == TargetType.weekly) {
+        // Check if lastUpdated was in a different week (simplified to 7 days)
+        if (now.difference(tasbih.lastUpdated).inDays >= 7) {
+          shouldReset = true;
+        }
+      }
+
+      if (shouldReset) {
+        tasbih.counter = 0;
+        tasbih.lastUpdated = now;
+        changed = true;
+      }
+    }
+
+    if (changed) {
       notifyListeners();
       _saveToPrefs();
     }
